@@ -2,6 +2,8 @@ import { api } from 'lwc';
 
 import saveToCart from '@salesforce/apex/ExternalProductViewController.saveToCart';
 
+import { Toasts } from 'c/toast';
+import { Utils } from 'c/util';
 import LightningModal from 'lightning/modal';
 
 export default class CartModal extends LightningModal {
@@ -36,15 +38,15 @@ export default class CartModal extends LightningModal {
         try {
             const result = await saveToCart({ cartItems: JSON.stringify(this.cartItems) });
             if (result && result.isSuccess) {
-                // toast success
+                Toasts.showSuccessToast('Saved Cart to the Salesforce database', this);
                 const saveEvent = new CustomEvent('save', { detail: this.cartItems });
                 this.dispatchEvent(saveEvent);
                 this.close();
             } else {
-                console.error(result.errorMessage);
+                Utils.handleControllerError(result, this);
             }
         } catch (error) {
-            console.error(error);
+            Utils.handleFatalError(error, this);
         }
     }
 

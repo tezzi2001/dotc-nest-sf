@@ -6,6 +6,8 @@ import addProduct from '@salesforce/apex/ExternalProductViewController.addProduc
 import updateProducts from '@salesforce/apex/ExternalProductViewController.updateProducts';
 import getCartItems from '@salesforce/apex/ExternalProductViewController.getCartItems';
 
+import { Utils } from 'c/util';
+import { Toasts } from 'c/toast';
 import AddProductModal from 'c/addProductModal';
 import CartModal from 'c/cartModal';
 
@@ -33,7 +35,7 @@ export default class ExternalProductView extends LightningElement {
             await this.getProductsByLimitAndOffset(10, 0);
             await this.getCartItems();
         } catch (error) {
-            console.error(error);
+            Utils.handleFatalError(error, this);
         }
     }
 
@@ -43,7 +45,7 @@ export default class ExternalProductView extends LightningElement {
             this.data = result.data;
             this.data.forEach((datum) => this.updateAllQuantityByProductId(datum.id, datum.quantity));
         } else {
-            console.error(result.errorMessage);
+            Utils.handleControllerError(result, this);
         }
     }
 
@@ -53,7 +55,7 @@ export default class ExternalProductView extends LightningElement {
             this.cartItems = result.data;
             this.cartItems.forEach((cartItem) => this.updateAllQuantityByProductId(cartItem.externalId, cartItem.quantity))
         } else {
-            console.error(result.errorMessage);
+            Utils.handleControllerError(result, this);
         }
     }
 
@@ -85,16 +87,17 @@ export default class ExternalProductView extends LightningElement {
                 case ACTIONS.delete:
                     const result = await deleteProductById({ id: row.id });
                     if (result && result.isSuccess) {
-                        this.data = this.data.filter((datum) => datum.id !== row.id)
+                        this.data = this.data.filter((datum) => datum.id !== row.id);
+                        Toasts.showSuccessToast('Deleted the Product from the Catatalog from the Nest database', this);
                     } else {
-                        console.error(result.errorMessage);
+                        Utils.handleControllerError(result, this);
                     }
                     break;
                 default:
                     break;
             }
         } catch (error) {
-            console.error(error);
+            Utils.handleFatalError(error, this);
         }
     }
 
@@ -137,11 +140,12 @@ export default class ExternalProductView extends LightningElement {
             if (result && result.isSuccess && result.data) {
                 this.data.push(...result.data);
                 this.refreshData();
+                Toasts.showSuccessToast('Added a new Product to the Catatalog to the Nest database', this);
             } else {
-                console.error(result.errorMessage);
+                Utils.handleControllerError(result, this);
             }
         } catch (error) {
-            console.error(error);
+            Utils.handleFatalError(error, this);
         }
     }
 
@@ -149,12 +153,12 @@ export default class ExternalProductView extends LightningElement {
         try {
             const result = await updateProducts({ products: JSON.stringify(products) });
             if (result && result.isSuccess) {
-                // toast success
+                Toasts.showSuccessToast('Saved Cart to the Catatalog to the Nest database', this);
             } else {
-                console.error(result.errorMessage);
+                Utils.handleControllerError(result, this);
             }
         } catch (error) {
-            console.error(error);
+            Utils.handleFatalError(error, this);
         }
     }
 
