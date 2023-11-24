@@ -1,0 +1,15 @@
+<template>
+    <lightning-card>
+        <div class="slds-grid slds-grid_align-end slds-m-around_small">
+            <lightning-button-icon icon-name="utility:cart" title="View Cart" size="medium" variant="brand" onclick={openCartModal}></lightning-button-icon>
+            <lightning-button-icon icon-name="utility:add" title="Add to Catalog" size="medium" variant="brand" class="slds-m-left_medium" onclick={openAddModal}></lightning-button-icon>
+        </div>
+        <lightning-datatable
+            hide-checkbox-column
+            key-field="id"
+            data={data}
+            columns={columns}
+            onrowaction={handleRowAction}
+        ></lightning-datatable>
+    </lightning-card>
+</template>

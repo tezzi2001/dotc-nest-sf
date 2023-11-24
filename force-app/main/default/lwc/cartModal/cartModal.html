@@ -1,0 +1,17 @@
+<template>
+    <lightning-modal-header label="Add a Product to the Cart"></lightning-modal-header>
+    <lightning-modal-body>
+        <lightning-datatable
+            hide-checkbox-column
+            key-field="externalId"
+            data={cartItems}
+            columns={columns}
+            onsave={saveDatatableChanges}
+            draft-values={draftValues}
+        ></lightning-datatable>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label="Cancel" title="Cancel" onclick={cancel} class="slds-m-right_x-small"></lightning-button>
+        <lightning-button variant="brand" label="Save" title="Save" onclick={save}></lightning-button>
+    </lightning-modal-footer>
+</template>

@@ -1,0 +1,14 @@
+<template>
+    <lightning-modal-header label="Add a Product to the Catalog"></lightning-modal-header>
+    <lightning-modal-body>
+        <div class="slds-grid slds-wrap">
+            <div for:each={fields} for:item="field" key={field.name} class="slds-size_1-of-2 slds-p-horizontal_x-small">
+                <lightning-input type={field.type} label={field.label} data-type={field.type} data-name={field.name} formatter={field.formatter} step={field.step} onchange={updateField}></lightning-input>
+            </div>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label="Cancel" title="Cancel" onclick={cancel} class="slds-m-right_x-small"></lightning-button>
+        <lightning-button variant="brand" label="Save" title="Save" onclick={save}></lightning-button>
+    </lightning-modal-footer>
+</template>
