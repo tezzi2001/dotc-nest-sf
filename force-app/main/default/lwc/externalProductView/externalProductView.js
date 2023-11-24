@@ -10,6 +10,7 @@ import { Utils } from 'c/util';
 import { Toasts } from 'c/toast';
 import AddProductModal from 'c/addProductModal';
 import CartModal from 'c/cartModal';
+import { subscribe } from 'lightning/empApi';
 
 const ACTIONS = {
     add: 'add',
@@ -34,7 +35,8 @@ export default class ExternalProductView extends LightningElement {
     async connectedCallback() {
         this.isLoading = true;
         try {
-            await this.getProductsByLimitAndOffset(10, 0);
+            subscribe('/event/NestServiceNotification__e', -1, () => { this.getProductsByLimitAndOffset(100, 0); });
+            await this.getProductsByLimitAndOffset(100, 0);
             await this.getCartItems();
         } catch (error) {
             Utils.handleFatalError(error, this);
