@@ -29,14 +29,17 @@ export default class ExternalProductView extends LightningElement {
     data = [];
     allQuantityByProductId = new Map();
     cartItems = [];
+    isLoading = false;
 
     async connectedCallback() {
+        this.isLoading = true;
         try {
             await this.getProductsByLimitAndOffset(10, 0);
             await this.getCartItems();
         } catch (error) {
             Utils.handleFatalError(error, this);
         }
+        this.isLoading = false;
     }
 
     async getProductsByLimitAndOffset(alimit, offset) {
