@@ -1,7 +1,23 @@
+/**
+ * @description Controller class to send REST request to Catalog service and get/save Cart Items
+ *
+ * @author Bohdan Bondarenko
+ * @date 2023-11-26
+ */
 public with sharing class ExternalProductViewController {
     private final static CalloutService calloutService = new CalloutService('https://2895-95-158-43-79.ngrok-free.app/v1/catalog');
     private final static CartSelector cartSelector = new CartSelector();
 
+    /**
+     * @description finds Products in the Catalog by limit and offet
+     *
+     * @param Integer alimit. Products record amount.
+     * @param Integer offset. Products record offset from the start of the database.
+     * 
+     * @return ServerResponse. Response with found Products
+     * 
+     * @author Bohdan Bondarenko
+     */
     @AuraEnabled
     public static ServerResponse getProductsByLimitAndOffset(Integer alimit, Integer offset) {
         try {
@@ -11,6 +27,15 @@ public with sharing class ExternalProductViewController {
         }
     }
 
+    /**
+     * @description adds Products to the Catalog
+     *
+     * @param String product. Stringified Product JSON to be added to the Catalog.
+     * 
+     * @return ServerResponse. Response with added Products
+     * 
+     * @author Bohdan Bondarenko
+     */
     @AuraEnabled
     public static ServerResponse addProduct(String product) {
         try {
@@ -20,6 +45,15 @@ public with sharing class ExternalProductViewController {
         }
     }
 
+    /**
+     * @description updates Product in the Catalog
+     *
+     * @param String product. Stringified Product JSON to be updated in the Catalog.
+     * 
+     * @return ServerResponse. Response with updated Products
+     * 
+     * @author Bohdan Bondarenko
+     */
     @AuraEnabled
     public static ServerResponse updateProducts(String products) {
         try {
@@ -30,6 +64,15 @@ public with sharing class ExternalProductViewController {
         }
     }
 
+    /**
+     * @description deletes Product from the Catalog
+     *
+     * @param String id. Id of the Product to be deleted from the Catalog.
+     * 
+     * @return ServerResponse. Empty response
+     * 
+     * @author Bohdan Bondarenko
+     */
     @AuraEnabled
     public static ServerResponse deleteProductById(String id) {
         try {
@@ -39,6 +82,13 @@ public with sharing class ExternalProductViewController {
         }
     }
 
+    /**
+     * @description finds CartItems__c in the Salesforce by the related Cart__c with Status__c = 'New' and Onwer = Current User
+     * 
+     * @return ServerResponse. Response with found CartItems__c
+     * 
+     * @author Bohdan Bondarenko
+     */
     @AuraEnabled
     public static ServerResponse getCartItems() {
         try {
@@ -55,6 +105,15 @@ public with sharing class ExternalProductViewController {
         }
     }
 
+    /**
+     * @description adds CartItems__c to Salesforce
+     *
+     * @param String cartItems. Stringified CartItems__c JSON to be added to the Salesforce.
+     * 
+     * @return ServerResponse. Empty response
+     * 
+     * @author Bohdan Bondarenko
+     */
     @AuraEnabled
     public static ServerResponse saveToCart(String cartItems) {
         try {
