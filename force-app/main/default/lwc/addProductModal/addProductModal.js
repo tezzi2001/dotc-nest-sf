@@ -6,11 +6,13 @@ export default class AddProductModal extends LightningModal {
             label: 'Name',
             name: 'name',
             type: 'text',
+            eventTargetField: 'value',
         },
         {
             label: 'Description',
             name: 'description',
             type: 'text',
+            eventTargetField: 'value',
         },
         {
             label: 'Price',
@@ -18,16 +20,19 @@ export default class AddProductModal extends LightningModal {
             type: 'number',
             formatter: 'currency',
             step: 0.01,
+            eventTargetField: 'value',
         },
         {
             label: 'Quantity',
             name: 'quantity',
             type: 'number',
+            eventTargetField: 'value',
         },
         {
             label: 'Available',
             name: 'available',
             type: 'checkbox',
+            eventTargetField: 'checked',
         }
     ];
     data = {
@@ -41,7 +46,9 @@ export default class AddProductModal extends LightningModal {
     updateField(e) {
         const fieldName = e.target.dataset.name;
         const fieldType = e.target.dataset.type;
-        const fieldValue = e.target.value;
+        const eventTargetField = this.fields.find((field) => field.name === fieldName).eventTargetField;
+        const fieldValue = e.target[eventTargetField];
+
         this.data[fieldName] = this.getFieldValue(fieldType, fieldValue);
     }
 

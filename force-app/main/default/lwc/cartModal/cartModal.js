@@ -11,10 +11,11 @@ export default class CartModal extends LightningModal {
         { label: 'Product Name', fieldName: 'name', hideDefaultActions: true },
         { label: 'Price Per Each', fieldName: 'price', type: 'currency', typeAttributes: { currencyCode: 'USD' }, hideDefaultActions: true },
         { label: 'Quantity', fieldName: 'quantity', type: 'number', hideDefaultActions: true, editable: true },
-        { type: 'button-icon', initialWidth: '20', typeAttributes: { name: 'delete', iconName: 'utility:delete', title: 'Delete from Catalog' } },
     ];
     @api cartItems = [];
+    @api allQuantityByProductId = new Map();
     draftValues = [];
+    errors = {};
 
     get totalPrice() {
         return this.cartItems
@@ -24,6 +25,20 @@ export default class CartModal extends LightningModal {
 
     saveDatatableChanges(e) {
         const draftValues = this.parseDraftValues(e.detail.draftValues);
+        
+        this.errors = {};
+        draftValues.forEach((draftValue) => {
+            if (draftValue.quantity < 0 || this.allQuantityByProductId.get(draftValue.externalId) - draftValue.quantity < 0) {
+                if (!this.errors.rows) this.errors.rows = {};
+                this.errors.rows[draftValue.externalId] = {
+                    title: 'There are some errors found!',
+                    messages: ['Enter a valid quantity!'],
+                    fieldNames: ['quantity'],
+                } 
+            }
+        })
+        if (this.errors.rows) return;
+
         this.cartItems = this.cartItems.map((cartItem) => {
             const draftValue = draftValues.find((draftValue) => draftValue.externalId === cartItem.externalId);
             return draftValue ? this.createCartItem(cartItem, draftValue) : cartItem;

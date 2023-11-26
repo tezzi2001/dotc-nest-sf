@@ -35,13 +35,17 @@ export default class ExternalProductView extends LightningElement {
     async connectedCallback() {
         this.isLoading = true;
         try {
-            subscribe('/event/NestServiceNotification__e', -1, () => { this.getProductsByLimitAndOffset(100, 0); });
-            await this.getProductsByLimitAndOffset(100, 0);
-            await this.getCartItems();
+            await subscribe('/event/NestServiceNotification__e', -1, () => { this.loadData() });
+            await this.loadData();
         } catch (error) {
             Utils.handleFatalError(error, this);
         }
         this.isLoading = false;
+    }
+
+    async loadData() {
+        await this.getProductsByLimitAndOffset(100, 0);
+        await this.getCartItems();
     }
 
     async getProductsByLimitAndOffset(alimit, offset) {
@@ -110,14 +114,18 @@ export default class ExternalProductView extends LightningElement {
         await CartModal.open({
             size: 'medium',
             cartItems: this.cartItems,
+            allQuantityByProductId: this.allQuantityByProductId,
             onupdate: (e) => {
                 e.stopPropagation();
                 e.detail.forEach((product) => {
-                    const datum = this.data.find((datum) => datum.id === product.externalId);
-                    datum.quantity = this.allQuantityByProductId.get(product.externalId) - product.quantity;
-
-                    const existingItem = this.cartItems.find((cartItem) => cartItem.externalId === product.externalId);
-                    existingItem.quantity = product.quantity;
+                    const newDatumQuantity = this.allQuantityByProductId.get(product.externalId) - product.quantity;
+                    if (product.quantity >= 0 && newDatumQuantity >= 0) {
+                        const datum = this.data.find((datum) => datum.id === product.externalId);
+                        datum.quantity = newDatumQuantity;
+    
+                        const existingItem = this.cartItems.find((cartItem) => cartItem.externalId === product.externalId);
+                        existingItem.quantity = product.quantity;
+                    }
                 });
                 this.refreshData();
             },
